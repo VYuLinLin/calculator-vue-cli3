@@ -16,6 +16,7 @@ export default {
   font-size: 30px;
   text-align: right;
   box-sizing: border-box;
+  padding: 0 8px;
   border-radius: 4px;
   color: #333;
   border-color: rgba(50, 58, 72, 0.8);

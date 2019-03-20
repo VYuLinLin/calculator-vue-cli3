@@ -42,7 +42,7 @@ export default {
         { text: '0', bjColor: '366cb7' },
         { text: '.', bjColor: '366cb7' },
         { text: '+/-', bjColor: '366cb7' },
-        { text: '＝', bjColor: 'd37500' }
+        { text: '=', bjColor: 'd37500' }
       ]
     }
   }

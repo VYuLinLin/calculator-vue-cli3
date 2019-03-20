@@ -7,7 +7,7 @@
 export default {
   name: 'CalcButton',
   props: {
-    bjColor: ''
+    bjColor: String
   },
   computed: {
     styles() {

@@ -9,14 +9,42 @@
 目标：代码规范，对模块的理解。 */
 
 export default class CalcMath {
-  constructor({total, currentValue} = {}) {
-    this.total = total || 0 // 初始化累计值
+  constructor({ tempValue, currentValue } = {}) {
+    this.tempValue = tempValue || 0 // 初始化暂存值
     this.currentValue = currentValue || 0 // 初始化当前值
-    this.regexp = /[\d|.|+|\-|×|÷]/
+    this.reentrantRE = /[\d|.|+|\-|×|÷]/ // 可输入正则
+    this.symbolEndRE = /[\.|+|\-|×|÷]$/ // 结尾符号正则
+    this.repeatDot = /\.\d+\./ // 重复小数点
   }
   getCurrentValue(text) {
-    this.regexp.test(text) && (this.currentValue += text.replace('+/-', '-'))
-    return this.currentValue
+    text = text.replace('+/-', '-')
+    let value = String(this.currentValue)
+    if (this.reentrantRE.test(text)) {
+      // 数字和符号键
+      const reg = this.symbolEndRE
+      const isRepeatSymbol = reg.test(value) && reg.test(text)
+      value = isRepeatSymbol ? value.replace(reg, text) : value + text
+      this.repeatDot.test(value) && (value = value.substring(0, value.length - 1))
+    } else {
+      // 功能键
+      text === '存储' && (this.tempValue = value)
+      text === '取存' && (value = this.tempValue)
+      text === '退格' && (value = value.substring(0, value.length - 1) || 0)
+      text === '清屏' && (value = 0)
+      text === '累存' && (this.tempValue = value = this.add(value, this.tempValue))
+      text === '积存' && (this.tempValue = value = this.mul(value, this.tempValue))
+      text === '清存' && (this.tempValue = 0)
+      text === '=' && (value = this.calcValue())
+    }
+    value = value === Infinity ? Infinity : value
+    this.currentValue = value
+    return value
+  }
+  // 等于
+  calcValue() {
+    let value = 0
+    // let currentValue = this.currentValue
+    return value
   }
   // 加
   add(a1, a2) {
