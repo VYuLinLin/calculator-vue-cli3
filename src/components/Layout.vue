@@ -1,22 +1,34 @@
 <template>
   <div class="layout">
-    <CalcHead></CalcHead>
-    <Menu></Menu>
+    <CalcHead v-model="calcValue"></CalcHead>
+    <Menu @onClick="clickBtn"></Menu>
   </div>
 </template>
 <script>
 import CalcHead from './CalcHead'
 import Menu from './Menu'
+import CalcMath from '../assets/js/math.js'
+let math = new CalcMath()
 
 export default {
   name: 'Layout',
   components: {
     CalcHead,
     Menu
+  },
+  data() {
+    return {
+      calcValue: '0'
+    }
+  },
+  methods: {
+    clickBtn(text) {
+      this.calcValue = math.getCurrentValue(text)
+    }
   }
 }
 </script>
-<style lang="scss" scoped>
+<style scoped>
 .layout {
   background-color: #767f8a;
   border-radius: 4px;
