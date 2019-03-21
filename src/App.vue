@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <img src="./imgui.png">
+    <!-- <img src="./imgui.png"> -->
     <Layout></Layout>
   </div>
 </template>

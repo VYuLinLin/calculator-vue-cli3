@@ -15,6 +15,8 @@ export default class CalcMath {
     this.reentrantRE = /[\d|.|+|\-|×|÷]/ // 可输入正则
     this.symbolEndRE = /[\.|+|\-|×|÷]$/ // 结尾符号正则
     this.repeatDot = /\.\d+\./ // 重复小数点
+    this.repeatZero = /^0\d/ // 0开头
+    this.arithmetic = /[|+|\-|×|÷]/ // 四则运算
   }
   getCurrentValue(text) {
     text = text.replace('+/-', '-')
@@ -24,17 +26,19 @@ export default class CalcMath {
       const reg = this.symbolEndRE
       const isRepeatSymbol = reg.test(value) && reg.test(text)
       value = isRepeatSymbol ? value.replace(reg, text) : value + text
-      this.repeatDot.test(value) && (value = value.substring(0, value.length - 1))
+      this.repeatDot.test(value) && (value = value.slice(0, -1))
+      this.repeatZero.test(value) && (value = value.slice(1))
     } else {
       // 功能键
       text === '存储' && (this.tempValue = value)
       text === '取存' && (value = this.tempValue)
-      text === '退格' && (value = value.substring(0, value.length - 1) || 0)
+      text === '退格' && (value = value.slice(0, -1) || 0)
       text === '清屏' && (value = 0)
       text === '累存' && (this.tempValue = value = this.add(value, this.tempValue))
       text === '积存' && (this.tempValue = value = this.mul(value, this.tempValue))
       text === '清存' && (this.tempValue = 0)
-      text === '=' && (value = this.calcValue())
+      // text === '=' && (value = this.calcValue()) // 精准版(未完成)
+      text === '=' && (value = eval(value.replace(/×/g, '*').replace(/÷/g, '/'))) // 简化版
     }
     value = value === Infinity ? Infinity : value
     this.currentValue = value
@@ -42,9 +46,23 @@ export default class CalcMath {
   }
   // 等于
   calcValue() {
-    let value = 0
-    // let currentValue = this.currentValue
-    return value
+    // let value = 0
+    let currentValue = this.currentValue.replace(this.symbolEndRE, '')
+    let tempList = currentValue.split(this.arithmetic)
+    let arithmeticList = currentValue.match(/[|+|\-|×|÷]/g)
+    // const flags = '+-'
+    // console.log(tempList)
+    // console.log(arithmeticList)
+    // arithmeticList.map(e => {
+    //   flags.includes(e)
+    // })
+    return arithmeticList.reduce((t, v, i, arr) => {
+      if (v === '×') return t + this.mul(tempList[i], tempList[i + 1])
+      if (v === '÷') return t + this.div(tempList[i], tempList[i + 1])
+      if (v === '+') return t + this.add(tempList[i], tempList[i + 1])
+      if (v === '-') return t + this.sub(tempList[i], tempList[i + 1])
+      // return flags.includes(v) ? tempList[i] +
+    }, 0)
   }
   // 加
   add(a1, a2) {
