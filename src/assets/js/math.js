@@ -13,7 +13,7 @@ export default class CalcMath {
     this.tempValue = tempValue || 0 // 初始化暂存值
     this.currentValue = currentValue || 0 // 初始化当前值
     this.reentrantRE = /[\d|.|+|\-|×|÷]/ // 可输入正则
-    this.symbolEndRE = /[\.|+|\-|×|÷]$/ // 结尾符号正则
+    this.symbolEndRE = /[.|+|\-|×|÷]$/ // 结尾符号正则
     this.repeatDot = /\.\d+\./ // 重复小数点
     this.repeatZero = /^0\d/ // 0开头
     this.arithmetic = /[|+|\-|×|÷]/ // 四则运算
@@ -38,7 +38,9 @@ export default class CalcMath {
       text === '积存' && (this.tempValue = value = this.mul(value, this.tempValue))
       text === '清存' && (this.tempValue = 0)
       // text === '=' && (value = this.calcValue()) // 精准版(未完成)
-      text === '=' && (value = eval(value.replace(/×/g, '*').replace(/÷/g, '/'))) // 简化版
+      try {
+        text === '=' && (value = window.eval(value.replace(/×/g, '*').replace(/÷/g, '/'))) // 简化版
+      } catch (e) { console.log(e) }
     }
     value = value === Infinity ? Infinity : value
     this.currentValue = value
